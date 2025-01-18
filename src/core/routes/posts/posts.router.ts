@@ -4,7 +4,6 @@ import {authMiddleware} from "../../../shared/middlewares/auth.middleware";
 import {handleValidationErrors} from "../../../shared/middlewares/error-handler.middleware";
 import {postsController} from "./posts.controller";
 import {postsValidation} from "./posts-validation.middleware";
-import {postsRepository} from "./posts.repo";
 
 
 export const postsRouter = Router({});

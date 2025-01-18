@@ -23,11 +23,6 @@ export const blogsMock = {
         name: "Test Blog",
         description: "Test Description",
         websiteUrl: "invalid-url"
-    },
-    incorrectUrlLength: {
-        name: "Test Blog",
-        description: "Test Description",
-        websiteUrl: "https://" + "a".repeat(95)
     }
 }
 

@@ -1,48 +1,46 @@
-import {blogsRepository} from "./blogs.repo";
+import { Request, Response } from "express";
+import {getBlogsRepositories} from "./blogs.repo";
 
 export const blogsController = {
-    getBlogs(req, res) {
-        res.status(200).json(blogsRepository.findAllBlogs());
+    async getBlogs(req: Request, res: Response) {
+        const blogs = await getBlogsRepositories().findAll();
+        res.status(200).json(blogs);
     },
 
-    createBlog(req, res) {
-        const {name, description, websiteUrl} = req.body
-        const newBlog = blogsRepository.createBlog(name, description, websiteUrl)
-        res.status(201).json(newBlog)
+    async createBlog(req: Request, res: Response) {
+        const { name, description, websiteUrl } = req.body;
+        const newBlog = await getBlogsRepositories().create({name, description, websiteUrl});
+        res.status(201).json(newBlog);
     },
 
-    getBlog(req, res) {
-        const blog = blogsRepository.findBlogById(req.params.id)
-
+    async getBlog(req: Request, res: Response) {
+        const blog = await getBlogsRepositories().findById(req.params.id);
         if (!blog) {
-            return res.sendStatus(404)
+            res.sendStatus(404);
+            return
         }
-
-        res.status(200).json(blog)
+        res.status(200).json(blog);
     },
 
-    updateBlog(req, res) {
+    async updateBlog(req: Request, res: Response) {
         const { id } = req.params;
         const { name, description, websiteUrl } = req.body;
 
-        const updated = blogsRepository.updateBlog(id, name, description, websiteUrl);
-
+        const updated = await getBlogsRepositories().update(id, {name, description, websiteUrl});
         if (!updated) {
-            return res.sendStatus(404);
+            res.sendStatus(404);
+            return
         }
-
         res.sendStatus(204);
     },
 
-    deleteBlog(req, res) {
+    async deleteBlog(req: Request, res: Response) {
         const { id } = req.params;
-
-        const deleted = blogsRepository.deleteBlog(id);
-
+        const deleted = await getBlogsRepositories().delete(id);
         if (!deleted) {
-            return res.sendStatus(404);
+            res.sendStatus(404);
+            return
         }
-
         res.sendStatus(204);
     }
 }

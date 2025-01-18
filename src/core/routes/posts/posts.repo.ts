@@ -1,66 +1,38 @@
-export type PostType = {
-    id: string
-    title: string
-    shortDescription: string
-    content: string
-    blogId: string
-    blogName: string
-    createdAt?: string
-}
-type PostOutputType = Omit<PostType, 'createdAt'>
+import { BaseRepository } from '../../../shared/base/repository.base'
+import { Filter } from 'mongodb'
+import {PostCreateModel, PostDBModel, PostViewModel} from "../../../shared/models/posts";
+import {getPostsCollection} from "../../../shared/db/mongo-db";
 
-export class PostsRepository {
-    private posts: PostType[] = []
-
-    createPost(title: string, shortDescription: string, content: string, blogId: string, blogName: string): PostOutputType {
-        const newPost: PostType = {
-            id: (+new Date()).toString(),
-            title,
-            shortDescription,
-            content,
-            blogId,
-            blogName,
-            createdAt: new Date().toISOString()
-        }
-        this.posts.push(newPost)
-        const {createdAt, ...postOutput} = newPost
-        return postOutput
+class PostsRepository extends BaseRepository<PostDBModel, PostViewModel, PostCreateModel> {
+    constructor() {
+        super(
+            getPostsCollection(),
+            (post) => ({
+                id: post._id.toString(),
+                title: post.title,
+                shortDescription: post.shortDescription,
+                content: post.content,
+                blogId: post.blogId,
+                blogName: post.blogName,
+                createdAt: post.createdAt
+            })
+        )
     }
 
-    findPostById(id: string): PostOutputType | null {
-        const post = this.posts.find(post => post.id === id)
-        if (!post) return null
-
-        const {createdAt, ...postOutput} = post
-        return postOutput
-    }
-
-    findAllPosts(): PostOutputType[] {
-        return this.posts.map(({createdAt, ...post}) => post)
-    }
-
-    updatePost(id: string, title: string, shortDescription: string, content: string): boolean {
-        const post = this.posts.find(p => p.id === id)
-        if (!post) return false
-
-        post.title = title
-        post.shortDescription = shortDescription
-        post.content = content
-
-        return true
-    }
-
-    deletePost(id: string): boolean {
-        const postIndex = this.posts.findIndex(p => p.id === id)
-        if (postIndex === -1) return false
-
-        this.posts.splice(postIndex, 1)
-        return true
-    }
-
-    clearAll(): void {
-        this.posts = []
+    async findByBlogId(blogId: string): Promise<PostViewModel[]> {
+        const filter = { blogId } as Filter<PostDBModel>
+        const posts = await this.collection.find(filter).toArray()
+        return posts.map(this.mapDocument)
     }
 }
 
-export const postsRepository = new PostsRepository()
+let postsRepository: PostsRepository;
+
+export function launchPostsRepositories() {
+    postsRepository = new PostsRepository();
+}
+
+export function getPostsRepositories() {
+    return postsRepository;
+}
+

@@ -1,51 +1,63 @@
-import {postsRepository} from "./posts.repo";
-import {blogsRepository} from "../blogs/blogs.repo";
+import { Request, Response } from "express";
+import { getBlogsRepositories} from "../blogs/blogs.repo";
+import {getPostsRepositories} from "./posts.repo";
 
 export const postsController = {
-    getPosts(req, res) {
-        res.status(200).json(postsRepository.findAllPosts());
+    async getPosts(req: Request, res: Response) {
+        const posts = await getPostsRepositories().findAll();
+        res.status(200).json(posts);
     },
 
-    createPost(req, res) {
-        const {title, shortDescription, content, blogId} = req.body
+    async createPost(req: Request, res: Response) {
+        const { title, shortDescription, content, blogId } = req.body;
+        const blog = await getBlogsRepositories().findById(blogId);
 
-        const blog = blogsRepository.findBlogById(blogId)
-
-        const newPost = postsRepository.createPost(
-            title,
-            shortDescription,
-            content,
-            blogId,
-            blog.name
-        )
-
-        res.status(201).json(newPost)
-    },
-
-    getPost(req, res) {
-        const post = postsRepository.findPostById(req.params.id)
-        post ? res.status(200).json(post) : res.status(404).send();
-    },
-
-    updatePost(req, res) {
-        const { title, shortDescription, content } = req.body;
-
-        const updated = postsRepository.updatePost(req.params.id, title, shortDescription, content);
-
-        if (!updated) {
-            return res.sendStatus(404);
+        if (!blog) {
+            res.sendStatus(404);
+            return
         }
 
+        const newPost = await getPostsRepositories().create(
+            {
+                title,
+                shortDescription,
+                content,
+                blogId,
+                blogName: blog.name
+            }
+        );
+
+        res.status(201).json(newPost);
+    },
+
+    async getPost(req: Request, res: Response) {
+        const post = await getPostsRepositories().findById(req.params.id);
+        if (!post) {
+            res.sendStatus(404);
+            return
+        }
+        res.status(200).json(post);
+    },
+
+    async updatePost(req: Request, res: Response) {
+        const { id } = req.params;
+        const { title, shortDescription, content } = req.body;
+
+        const updated = await getPostsRepositories().update(id, {title, shortDescription, content});
+        if (!updated) {
+            res.sendStatus(404);
+            return
+        }
         res.sendStatus(204);
     },
 
-    deletePost(req, res) {
-        const deleted = postsRepository.deletePost(req.params.id)
-
+    async deletePost(req: Request, res: Response) {
+        const { id } = req.params;
+        const deleted = await getPostsRepositories().delete(id);
         if (!deleted) {
-            return res.sendStatus(404)
+            res.sendStatus(404);
+            return
         }
-
-        return res.sendStatus(204)
+        res.sendStatus(204);
     }
 }

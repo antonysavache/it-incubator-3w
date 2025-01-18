@@ -1,10 +1,11 @@
-import {blogsRepository} from "../blogs/blogs.repo";
-import {postsRepository} from "../posts/posts.repo";
+import { Request, Response } from "express";
+import {getBlogsRepositories} from "../blogs/blogs.repo";
+import {getPostsRepositories} from "../posts/posts.repo";
 
 export const testingController = {
-    deleteAll(req, res) {
-        blogsRepository.clearAll();
-        postsRepository.clearAll();
-        res.status(204).send();
+    async deleteAll(req: Request, res: Response) {
+        await getBlogsRepositories().deleteAll();
+        await getPostsRepositories().deleteAll();
+        res.sendStatus(204);
     }
 }

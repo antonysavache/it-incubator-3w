@@ -1,5 +1,7 @@
 export const SETTINGS = {
     PORT: process.env.PORT || 3003,
+    DB_NAME: 'blogs-platform',
+    DB_URL: 'mongodb+srv://admin:admin@lessons.x4ym2.mongodb.net/?retryWrites=true&w=majority&appName=lessons',
     PATH: {
         ROOT: '/',
         ROOT_ENTITY: '/:id',
@@ -10,3 +12,4 @@ export const SETTINGS = {
         POSTS: '/posts'
     },
 }
+
