@@ -16,6 +16,10 @@ export class BlogsRepository extends BaseRepository<BlogDBModel, BlogViewModel, 
             })
         )
     }
+
+    async deleteAll(): Promise<void> {
+        await this.collection.deleteMany({})
+    }
 }
 
 export let blogsRepository: BaseRepository<BlogDBModel, BlogViewModel, BlogCreateModel>

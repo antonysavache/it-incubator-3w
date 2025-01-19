@@ -1,6 +1,7 @@
 import { MongoClient, Db } from 'mongodb'
-import {SETTINGS} from "./src/settings";
-import {BlogsRepository, setBlogsRepository} from "./src/core/routes/blogs/blogs.repo";
+import { SETTINGS } from "./src/settings"
+import { BlogsRepository, setBlogsRepository } from "./src/core/routes/blogs/blogs.repo"
+import { PostsRepository, setPostsRepository } from "./src/core/routes/posts/posts.repo"
 
 export class AppInit {
     private static instance: AppInit | null = null
@@ -9,7 +10,6 @@ export class AppInit {
 
     private constructor() {}
 
-    // Singleton pattern to ensure only one instance exists
     public static getInstance(): AppInit {
         if (!AppInit.instance) {
             AppInit.instance = new AppInit()
@@ -19,17 +19,11 @@ export class AppInit {
 
     public async init(dbName: string = SETTINGS.DB_NAME, dbUrl: string = SETTINGS.DB_URL) {
         try {
-            // Create MongoDB client
             this.mongoClient = new MongoClient(dbUrl)
-
-            // Connect to the database
             await this.mongoClient.connect()
             console.log('Successfully connected to MongoDB')
 
-            // Select the database
             this.database = this.mongoClient.db(dbName)
-
-            // Initialize repositories
             this.initializeRepositories()
 
             return {
@@ -42,7 +36,6 @@ export class AppInit {
         }
     }
 
-    // Method to initialize repositories
     private initializeRepositories() {
         if (!this.database) {
             throw new Error('Database not initialized')
@@ -54,7 +47,11 @@ export class AppInit {
         const blogsRepository = new BlogsRepository(blogsCollection)
         setBlogsRepository(blogsRepository)
 
-        // You can add more repository initializations here
+        // Initialize posts repository
+        const postsCollection = this.database.collection('posts')
+        // @ts-ignore
+        const postsRepository = new PostsRepository(postsCollection)
+        setPostsRepository(postsRepository)
     }
 
     public async close() {

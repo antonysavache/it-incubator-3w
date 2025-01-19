@@ -24,6 +24,10 @@ export class PostsRepository extends BaseRepository<PostDBModel, PostViewModel, 
         const posts = await this.collection.find(filter).toArray()
         return posts.map(this.mapDocument)
     }
+
+    async deleteAll(): Promise<void> {
+        await this.collection.deleteMany({})
+    }
 }
 
 export let postsRepository: BaseRepository<PostDBModel, PostViewModel, PostCreateModel>
