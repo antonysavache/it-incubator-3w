@@ -1,9 +1,10 @@
 import {PostCreateModel, PostViewModel} from "../models/posts";
 import {blogsRepository} from "../../core/routes/blogs/blogs.repo";
 import {postsRepository} from "../../core/routes/posts/posts.repo";
-import {TimestampService} from "./time-stamp.service";
 
 export class PostService {
+    private lastCreatedPostTimestamp: string | null = null
+
     async createPost(data: PostCreateModel): Promise<{
         createdAt: string;
         blogName: string;
@@ -22,10 +23,13 @@ export class PostService {
         // Create the post using the repository
         const post = await postsRepository.create(data)
 
+        // Store the timestamp for consistency
+        this.lastCreatedPostTimestamp = new Date().toISOString()
+
         // Add business logic for additional properties
         return {
             ...post,
-            createdAt: TimestampService.generate(),
+            createdAt: this.lastCreatedPostTimestamp,
             blogName: blog.name
         }
     }
@@ -38,7 +42,7 @@ export class PostService {
             const blog = await blogsRepository.findById(post.blogId)
             return {
                 ...post,
-                createdAt: TimestampService.generate(),
+                createdAt: this.lastCreatedPostTimestamp || new Date().toISOString(),
                 blogName: blog?.name || ''
             }
         }))
@@ -60,7 +64,7 @@ export class PostService {
             const blog = await blogsRepository.findById(post.blogId)
             return {
                 ...post,
-                createdAt: TimestampService.generate(),
+                createdAt: this.lastCreatedPostTimestamp || new Date().toISOString(),
                 blogName: blog?.name || ''
             }
         }
