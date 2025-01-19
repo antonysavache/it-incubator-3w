@@ -1,12 +1,12 @@
 import { body } from 'express-validator'
-import {getBlogsRepositories} from "../blogs/blogs.repo";
+import {blogsRepository} from "../blogs/blogs.repo";
 
 export const postsValidation = [
     body('blogId')
         .trim()
         .notEmpty().withMessage('Blog ID is required')
         .custom((blogId: string) => {
-            const blog = getBlogsRepositories().findById(blogId)
+            const blog = blogsRepository.findById(blogId)
             if (!blog) {
                 throw new Error('Blog not found')
             }

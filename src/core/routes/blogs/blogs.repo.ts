@@ -1,11 +1,11 @@
-import {BaseRepository} from '../../../shared/base/repository.base'
-import {getBlogsCollection} from '../../../shared/db/mongo-db'
-import {BlogCreateModel, BlogDBModel, BlogViewModel} from "../../../shared/models/blogs";
+import { BaseRepository } from '../../../shared/base/repository.base'
+import { BlogCreateModel, BlogDBModel, BlogViewModel } from "../../../shared/models/blogs"
+import { Collection } from 'mongodb'
 
-class BlogsRepository extends BaseRepository<BlogDBModel, BlogViewModel, BlogCreateModel> {
-    constructor() {
+export class BlogsRepository extends BaseRepository<BlogDBModel, BlogViewModel, BlogCreateModel> {
+    constructor(collection: Collection<BlogDBModel>) {
         super(
-            getBlogsCollection(),
+            collection,
             (blog) => ({
                 id: blog._id.toString(),
                 name: blog.name,
@@ -17,13 +17,8 @@ class BlogsRepository extends BaseRepository<BlogDBModel, BlogViewModel, BlogCre
     }
 }
 
-let blogsRepository: BlogsRepository;
+export let blogsRepository: BaseRepository<BlogDBModel, BlogViewModel, BlogCreateModel>
 
-export function launchBlogsRepositories() {
-    blogsRepository = new BlogsRepository();
+export const setBlogsRepository = (repo: BaseRepository<BlogDBModel, BlogViewModel, BlogCreateModel>) => {
+    blogsRepository = repo
 }
-
-export function getBlogsRepositories() {
-    return blogsRepository;
-}
-

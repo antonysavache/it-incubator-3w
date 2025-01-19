@@ -2,13 +2,8 @@ import request from 'supertest'
 import {app} from "../../../app"
 import {SETTINGS} from "../../../settings"
 import {basicAuthMock, blogsMock, getBasicAuthHeader} from "./blogs.mock"
-import {launchBlogsRepositories} from "./blogs.repo";
 
 describe('blogs testing', () => {
-    beforeAll(async () => {
-        await launchBlogsRepositories()
-    })
-
     describe('GET /blogs', () => {
         it('should return array with created blogs', async () => {
             return request(app)

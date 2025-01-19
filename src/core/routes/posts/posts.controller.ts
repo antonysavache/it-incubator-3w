@@ -1,23 +1,23 @@
 import { Request, Response } from "express";
-import { getBlogsRepositories} from "../blogs/blogs.repo";
-import {getPostsRepositories} from "./posts.repo";
+import {postsRepository} from "./posts.repo";
+import {blogsRepository} from "../blogs/blogs.repo";
 
 export const postsController = {
     async getPosts(req: Request, res: Response) {
-        const posts = await getPostsRepositories().findAll();
+        const posts = await postsRepository.findAll();
         res.status(200).json(posts);
     },
 
     async createPost(req: Request, res: Response) {
         const { title, shortDescription, content, blogId } = req.body;
-        const blog = await getBlogsRepositories().findById(blogId);
+        const blog = await blogsRepository.findById(blogId);
 
         if (!blog) {
             res.sendStatus(404);
             return
         }
 
-        const newPost = await getPostsRepositories().create(
+        const newPost = await postsRepository.create(
             {
                 title,
                 shortDescription,
@@ -31,7 +31,7 @@ export const postsController = {
     },
 
     async getPost(req: Request, res: Response) {
-        const post = await getPostsRepositories().findById(req.params.id);
+        const post = await postsRepository.findById(req.params.id);
         if (!post) {
             res.sendStatus(404);
             return
@@ -43,7 +43,7 @@ export const postsController = {
         const { id } = req.params;
         const { title, shortDescription, content } = req.body;
 
-        const updated = await getPostsRepositories().update(id, {title, shortDescription, content});
+        const updated = await postsRepository.update(id, {title, shortDescription, content});
         if (!updated) {
             res.sendStatus(404);
             return
@@ -53,7 +53,7 @@ export const postsController = {
 
     async deletePost(req: Request, res: Response) {
         const { id } = req.params;
-        const deleted = await getPostsRepositories().delete(id);
+        const deleted = await postsRepository.delete(id);
         if (!deleted) {
             res.sendStatus(404);
             return

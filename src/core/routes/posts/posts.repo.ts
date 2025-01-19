@@ -1,12 +1,12 @@
+// src/core/routes/posts/posts.repo.ts
 import { BaseRepository } from '../../../shared/base/repository.base'
-import { Filter } from 'mongodb'
-import {PostCreateModel, PostDBModel, PostViewModel} from "../../../shared/models/posts";
-import {getPostsCollection} from "../../../shared/db/mongo-db";
+import { PostCreateModel, PostDBModel, PostViewModel } from "../../../shared/models/posts"
+import {Collection, Filter} from 'mongodb'
 
-class PostsRepository extends BaseRepository<PostDBModel, PostViewModel, PostCreateModel> {
-    constructor() {
+export class PostsRepository extends BaseRepository<PostDBModel, PostViewModel, PostCreateModel> {
+    constructor(collection: Collection<PostDBModel>) {
         super(
-            getPostsCollection(),
+            collection,
             (post) => ({
                 id: post._id.toString(),
                 title: post.title,
@@ -26,13 +26,8 @@ class PostsRepository extends BaseRepository<PostDBModel, PostViewModel, PostCre
     }
 }
 
-let postsRepository: PostsRepository;
+export let postsRepository: BaseRepository<PostDBModel, PostViewModel, PostCreateModel>
 
-export function launchPostsRepositories() {
-    postsRepository = new PostsRepository();
+export const setPostsRepository = (repo: BaseRepository<PostDBModel, PostViewModel, PostCreateModel>) => {
+    postsRepository = repo
 }
-
-export function getPostsRepositories() {
-    return postsRepository;
-}
-
