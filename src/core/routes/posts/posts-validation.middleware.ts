@@ -1,18 +1,7 @@
 import { body } from 'express-validator'
-import {blogsRepository} from "../blogs/blogs.repo";
+import { blogsRepository } from '../blogs/blogs.repo'
 
 export const postsValidation = [
-    body('blogId')
-        .trim()
-        .notEmpty().withMessage('Blog ID is required')
-        .custom((blogId: string) => {
-            const blog = blogsRepository.findById(blogId)
-            if (!blog) {
-                throw new Error('Blog not found')
-            }
-            return true
-        }).withMessage('Blog not found'),
-
     body('title')
         .trim()
         .notEmpty().withMessage('Title is required')
@@ -26,5 +15,16 @@ export const postsValidation = [
     body('content')
         .trim()
         .notEmpty().withMessage('Content is required')
-        .isLength({ max: 1000 }).withMessage('Content should not exceed 1000 characters')
+        .isLength({ max: 1000 }).withMessage('Content should not exceed 1000 characters'),
+
+    body('blogId')
+        .trim()
+        .notEmpty().withMessage('Blog ID is required')
+        .custom(async (value) => {
+            const blog = await blogsRepository.findById(value)
+            if (!blog) {
+                throw new Error('Blog does not exist')
+            }
+            return true
+        })
 ]
