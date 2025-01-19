@@ -1,20 +1,25 @@
 import { Request, Response } from "express";
-import {blogsRepository} from "./blogs.repo";
+import { blogsRepository } from "./blogs.repo";
+import {blogService} from "../../../shared/services/blogs.service";
 
 export const blogsController = {
     async getBlogs(req: Request, res: Response) {
-        const blogs = await blogsRepository.findAll();
+        const blogs = await blogService.findAllBlogs();
         res.status(200).json(blogs);
     },
 
     async createBlog(req: Request, res: Response) {
         const { name, description, websiteUrl } = req.body;
-        const newBlog = await blogsRepository.create({name, description, websiteUrl});
+        const newBlog = await blogService.createBlog({
+            name,
+            description,
+            websiteUrl
+        });
         res.status(201).json(newBlog);
     },
 
     async getBlog(req: Request, res: Response) {
-        const blog = await blogsRepository.findById(req.params.id);
+        const blog = await blogService.findBlogById(req.params.id);
         if (!blog) {
             res.sendStatus(404);
             return

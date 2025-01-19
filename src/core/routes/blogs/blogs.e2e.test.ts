@@ -59,6 +59,7 @@ describe('blogs testing', () => {
                     .send(blogsMock.incorrectDescription)
                     .expect(400)
                     .expect(res => {
+                        console.log(res)
                         expect(res.body).toEqual({
                             errorsMessages: [{
                                 message: expect.any(String),

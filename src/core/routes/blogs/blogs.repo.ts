@@ -11,7 +11,8 @@ export class BlogsRepository extends BaseRepository<BlogDBModel, BlogViewModel, 
                 name: blog.name,
                 description: blog.description,
                 websiteUrl: blog.websiteUrl,
-                createdAt: blog.createdAt
+                createdAt: blog.createdAt || new Date().toISOString(),
+                isMembership: blog.isMembership ?? false
             })
         )
     }

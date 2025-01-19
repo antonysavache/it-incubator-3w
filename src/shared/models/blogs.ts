@@ -5,14 +5,17 @@ export interface BlogDBModel {
     name: string
     description: string
     websiteUrl: string
-    createdAt: string
+    createdAt: string;
+    isMembership: boolean;
 }
 
 export interface BlogViewModel {
     id: string
     name: string
     description: string
-    websiteUrl: string
+    websiteUrl: string;
+    createdAt: string;
+    isMembership: boolean;
 }
 
 export interface BlogCreateModel {

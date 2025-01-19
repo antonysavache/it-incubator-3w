@@ -1,30 +1,18 @@
-import { BaseTestSetup } from "./src/shared/base/jest-setup.base"
-import { SETTINGS } from "./src/settings"
+import { SETTINGS } from './src/settings'
+import {AppInit} from "./app-init";
 
-class TestSetup extends BaseTestSetup {
-    async init() {
-        const collections = [
-            { name: 'blogs' },
-            { name: 'posts' }
-        ]
-
-        return this.setupApp(collections)
-    }
-}
-
-const testSetup = new TestSetup(
-    SETTINGS.DB_NAME,
-    SETTINGS.DB_URL
-)
+const testSetup = AppInit.getInstance()
 
 beforeAll(async () => {
-    await testSetup.init()
-})
+    await testSetup.init(SETTINGS.DB_NAME, SETTINGS.DB_URL)
+}, 10000)
 
-beforeEach(async () => {
-    await testSetup.clearDb()
-})
+// beforeEach(async () => {
+//     const database = testSetup.getDatabase() // You'll need to add this method to AppInit
+//     const collections = await database.collections()
+//     await Promise.all(collections.map(collection => collection.deleteMany({})))
+// }, 10000)
 
 afterAll(async () => {
-    await testSetup.closeDb()
-})
+    await testSetup.close()
+}, 10000)
